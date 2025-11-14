@@ -54,10 +54,10 @@ The pragmatic solution is not to distinguish `ord` and `stmt`and to de-duplicate
 
 #### Stage 1: De-duplicate same medication name issued to same patient on the same day
 
-Problem solved:
+_Problem:_
 <p><img src="./images/problem1.png" alt="G&H Team Data logo" width=100%>
 
-
+_Solution:_
 ```python
 .sort(by=[ pl.col.original_code.str.len_chars(), pl.col.CUT ], descending=True)
 .unique(
@@ -65,14 +65,27 @@ Problem solved:
         "pseudo_nhs_number",
         "clinical_effective_date",
         "original_term",
-        # "original_code",
     ]
 )
 ```
-Outcome:
+_Explanation_
+
+We sort on the length of the original code looking for longest SNOMED codes, this is because NHS SNOMED codes are typically longer that "international" SNOMED codes:
+
+* 319283006 |Product containing precisely amlodipine besilate 5 milligram/1 each conventional release oral tablet (clinical drug)|
+* 39732011000001102 |Product containing precisely amlodipine 5 milligram/1 each conventional release oral tablet 1 tablet tablet (clinical drug)| \[this one has children that are UK meds\]
+
+We then pick the row from the most recent cut
+
+_Outcome:_
 <p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
 
+#### Stage 2:  De-duplicate same SNOMED code, different `original_term`
 
+_Problem_
+<p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
+
+_Solution:_
 ```python
 .sort(by=[ pl.col.original_term.str.len_chars(), pl.col.CUT ], descending=True)
 .unique(
@@ -81,4 +94,11 @@ Outcome:
     ]
 )
 ```
+_Explanation_
+
+We sort on the length of the `original_term`, this is because the longer the `original_term` the more likely it is the be the fullest description.
+
+_Outcome:_
+<p><img src="./images/solution2.png" alt="G&H Team Data logo" width=100%>
+
 
