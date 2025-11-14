@@ -1,6 +1,6 @@
 # `MED_PY` — python pipeline for prescribing data collection in Genes & Health
 
-<!-- <img src="GNH%20TD%20Logo.png" alt="G&H Team Data logo" width=25%> -->
+<img src="./images/GNH%20TD%20Logo.png" alt="G&H Team Data logo" width=25%>
 <!-- <img width="191" height="20" alt="image" src="https://github.com/user-attachments/assets/e5814924-f5a7-41d4-b634-e7e519a3fbfe" /> -->
 
 ## Authors & Contributors
@@ -55,7 +55,7 @@ The pragmatic solution is not to distinguish `ord` and `stmt`and to de-duplicate
 #### Stage 1: De-duplicate same medication name issued to same patient on the same day
 
 Problem solved:
-
+<p><img src="./images/problem1.png" alt="G&H Team Data logo" width=100%>
 
 
 ```python
@@ -68,6 +68,12 @@ Problem solved:
         # "original_code",
     ]
 )
+```
+Outcome:
+<p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
+
+
+```python
 .sort(by=[ pl.col.original_term.str.len_chars(), pl.col.CUT ], descending=True)
 .unique(
     [
