@@ -40,3 +40,39 @@ TBC
 ## How the pipeline works
 
 ### Deduplicating prescribing data
+
+The problem is that there is a huge amount of redundancy in the raw data:
+* Prescriptions are duplicated between cuts
+* Identical or near identical prescriptions are found in `ord` (repeat) and `stmt` (short-term medication and treatment) entries
+* Different SNOMED codes for the same entity are captured by different cuts
+
+So for one patient, there are 59 prescriptions assigned to a single date!
+
+**Solution**
+
+The pragmatic solution is not to distinguish `ord` and `stmt`and to de-duplicate in stages.
+
+#### Stage 1: De-duplicate same medication name issued to same patient on the same day
+
+Problem solved:
+
+
+
+```python
+.sort(by=[ pl.col.original_code.str.len_chars(), pl.col.CUT ], descending=True)
+.unique(
+    [
+        "pseudo_nhs_number",
+        "clinical_effective_date",
+        "original_term",
+        # "original_code",
+    ]
+)
+.sort(by=[ pl.col.original_term.str.len_chars(), pl.col.CUT ], descending=True)
+.unique(
+    [
+        "original_code"
+    ]
+)
+```
+
