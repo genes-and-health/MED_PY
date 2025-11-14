@@ -46,7 +46,7 @@ The problem is that there is a huge amount of redundancy in the raw data:
 * Identical or near identical prescriptions are found in `ord` (repeat) and `stmt` (short-term medication and treatment) entries
 * Different SNOMED codes for the same entity are captured by different cuts
 
-So for one patient, there are 59 prescriptions assigned to a single date!
+So for one patient, there are **97 prescriptions assigned to a single date**!
 
 **Solution**
 
@@ -80,6 +80,8 @@ We then pick the row from the most recent cut
 _Outcome:_
 <p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
 
+97 rows --> 36 rows
+
 #### Stage 2:  De-duplicate same SNOMED code, different `original_term`
 
 _Problem_
@@ -101,4 +103,9 @@ We sort on the length of the `original_term`, this is because the longer the `or
 _Outcome:_
 <p><img src="./images/solution2.png" alt="G&H Team Data logo" width=100%>
 
+36 rows --> 30 rows
 
+#### Impact
+
+In the case of the individual with 97 prescriptions, we go from 97 rows to 30 rows.
+In the case of all individuals, we go from 35_107_228 rows to --> 23_122_567 rows --> 22_943_164 (65% of initial num rows).
