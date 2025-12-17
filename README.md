@@ -82,7 +82,7 @@ _Outcome:_
 
 97 rows --> 36 rows
 
-#### Stage 2:  De-duplicate same SNOMED code, different `original_term`
+#### Stage 2:  De-duplicate same `original_code` (SNOMED code), different `original_term`
 
 _Problem_
 <p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
@@ -92,7 +92,9 @@ _Solution:_
 .sort(by=[ pl.col.original_term.str.len_chars(), pl.col.CUT ], descending=True)
 .unique(
     [
-        "original_code"
+        "pseudo_nhs_number",
+        "clinical_effective_date",
+        "original_code",
     ]
 )
 ```
