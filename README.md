@@ -12,8 +12,9 @@
 The Genes & Health (G&H) `MED_PY` pipeline extracts and processes prescribing data from G&H raw phenotypic data.
 At present, this is limited to prescribing data from NEL primary care records.
 
-MED_PY is under beta-development and this page is a place holder.  A (QMUL sandbox-1) beta-release of MED_PY data is expected in May 2026 and an official release within a month of the beta-release.
+**MED_PY is under beta-development and this page is a place holder.  A (QMUL sandbox-1) beta-release of MED_PY data is expected in May 2026 and an official release within a month of the beta-release.**
 
+<!--
 ## Phenotype data
 
 The pipeline imports G&H phenotype data in `.../library-red/phenotypes_rawdata/`.  These data are from:
@@ -29,4 +30,4 @@ No input files at present.
 ## Output files
 
 TBC
-
+-->
