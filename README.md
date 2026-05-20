@@ -38,16 +38,16 @@ The above require access to a BNF_CODE <-> SNOMED_CODE <-> VTM look-up table.  T
 
 The pipeline imports G&H prescribing data in `.../library-red/phenotypes_rawdata/DSA__Discovery_7CCGs/`: 
 
-./2022_04_Discovery/GNH_bhr-phase2-outfiles_merge/GNH_bhr_medications_ord_output_dataset_20220412.csv
-./2022_04_Discovery/GNH_thwfnech-phase2-outfiles_merge/GNH_thwfnech_medications_ord_output_dataset_20220423.csv
-./2022_12_Discovery/GNH_bhr-phase2-outfiles_merge/gh2_medications_ord_dataset_20221207.csv
-./2022_12_Discovery/GNH_thwfnech-phase2-outfiles_merge/cohort_gh2_medications_ord_output_dataset_20221207.csv
-./2023_01_Discovery/gh3_medication_ord.csv
-./2023_03_Discovery/gh3_medication_ord.csv
-./2023_11_Discovery/gh3_medication_ord.csv
-./2024_07_Discovery/gh3_medication_ord.csv
-./2024_12_Discovery/gh3_medication_ord.csv
-./2026_04_Discovery/gh3_medication_ord.csv
+1. ./2022_04_Discovery/GNH_bhr-phase2-outfiles_merge/GNH_bhr_medications_ord_output_dataset_20220412.csv
+2. ./2022_04_Discovery/GNH_thwfnech-phase2-outfiles_merge/GNH_thwfnech_medications_ord_output_dataset_20220423.csv
+3. ./2022_12_Discovery/GNH_bhr-phase2-outfiles_merge/gh2_medications_ord_dataset_20221207.csv
+4. ./2022_12_Discovery/GNH_thwfnech-phase2-outfiles_merge/cohort_gh2_medications_ord_output_dataset_20221207.csv
+5. ./2023_01_Discovery/gh3_medication_ord.csv
+6. ./2023_03_Discovery/gh3_medication_ord.csv
+7. ./2023_11_Discovery/gh3_medication_ord.csv
+8. ./2024_07_Discovery/gh3_medication_ord.csv
+9. ./2024_12_Discovery/gh3_medication_ord.csv
+10. ./2026_04_Discovery/gh3_medication_ord.csv
 
 ## An important note re: prescribing data in G&H
 
@@ -58,24 +58,26 @@ The notion that `ord` files contains repeat ("ordinary") presctiptions and that 
 
 ## Input files
 
-Beyond the `.ord` files listed above, the pipeline requires the extended BNF <-> SNOMED <-> VTM look-up tables
+Beyond the `.ord` files listed above, the pipeline requires the extended BNF <-> SNOMED <-> VTM look-up tables:
+
+* `2026_05_08_BNF_SNOMED_VTM_mapping.parquet`
 
 ## Output files
 
-TBC
-
-## Locations/paths naming convention
-
-1. We do not use relative paths.
-2. We do not explicitly use the word FOLDER in the naming, so `MEGADATA_LOCATION`, not `MEGADATA_FOLDER_LOCATION`.
-3. Locations and paths are in `UPPER_CASE`.
-4. When referred to as `_LOCATION`, the variable contain a string with the path.
-5. When referred to as `_PATH`, the variable is an `AnyPath` path object.
-6. The folder order is "what it is" / "Where it's from" so, for example megadata/primary_care not primary_care/megadata; so `MEGADATA_PRIMARY_CARE_LOCATION` or `PROCESSED_DATASETS_PRIMARY_CARE_PATH`
+1. `2026_05_18__MED_PY_v010_one_row_per_prescription.parquet`
+2. `2026_05_18__MED_PY_v010_one_row_per_VTM.parquet`
 
 ## How the pipeline works
 
-### Deduplicating prescribing data
+### 1. Collect and compile NHS BSA BNF SNOMED (+/- VTM) mapping
+
+[BNF SNOMED mapping](https://www.nhsbsa.nhs.uk/prescription-data/understanding-our-data/bnf-snomed-mapping)
+
+From April 2025, NHS BSA has added columns VTM and VTM name to the files.
+
+This is performed by 2 notebooks:
+1. 1_NHSBSA_BNF_SNOMED_collector.ipynb
+2. 2_NHSBSA_BNF_SNOMED_compiler.ipynb
 
 The problem is that there is a huge amount of redundancy in the raw data:
 * Prescriptions are duplicated between cuts
