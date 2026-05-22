@@ -9,6 +9,7 @@
 * Mike Samuels
 * Daniel Stow
 * Sarah Finer
+* David van Heel
 
 ## Summary
 
@@ -79,92 +80,12 @@ This is performed by 2 notebooks:
 1. 1_NHSBSA_BNF_SNOMED_collector.ipynb
 2. 2_NHSBSA_BNF_SNOMED_compiler.ipynb
 
-The problem is that there is a huge amount of redundancy in the raw data:
-* Prescriptions are duplicated between cuts
-* Identical or near identical prescriptions are found in `ord` (repeat) and `stmt` (short-term medication and treatment) entries
-* Different SNOMED codes for the same entity are captured by different cuts
+### 2. Collect and compile NEL prescribing data (.ord files)
 
-So for one patient, there are **97 prescriptions assigned to a single date**!
+Two script manage the creation of MED_PY
 
-**Solution**
-
-The pragmatic solution is not to distinguish `ord` and `stmt`and to de-duplicate in stages.
-
-#### Stage 1: De-duplicate same medication name issued to same patient on the same day
-
-_Problem:_
-<p><img src="./images/problem1.png" alt="G&H Team Data logo" width=100%>
-
-_Solution:_
-```python
-.sort(by=[ pl.col.original_code.str.len_chars(), pl.col.CUT ], descending=True)
-.unique(
-    [
-        "pseudo_nhs_number",
-        "clinical_effective_date",
-        "original_term",
-    ]
-)
-```
-_Explanation_
-
-We sort on the length of the original code looking for longest SNOMED codes, this is because NHS SNOMED codes are typically longer that "international" SNOMED codes:
-
-* 319283006 |Product containing precisely amlodipine besilate 5 milligram/1 each conventional release oral tablet (clinical drug)|
-* 39732011000001102 |Product containing precisely amlodipine 5 milligram/1 each conventional release oral tablet 1 tablet tablet (clinical drug)| \[this one has children that are UK meds\]
-
-We then pick the row from the most recent cut
-
-_Outcome:_
-<p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
-
-97 rows --> 36 rows
-
-#### Stage 2:  De-duplicate same `original_code` (SNOMED code), different `original_term`
-
-_Problem_
-<p><img src="./images/solution1.png" alt="G&H Team Data logo" width=100%>
-
-_Solution:_
-```python
-.sort(by=[ pl.col.original_term.str.len_chars(), pl.col.CUT ], descending=True)
-.unique(
-    [
-        "pseudo_nhs_number",
-        "clinical_effective_date",
-        "original_code",
-    ]
-)
-```
-_Explanation_
-
-We sort on the length of the `original_term`, this is because the longer the `original_term` the more likely it is the be the fullest description.
-
-_Outcome:_
-<p><img src="./images/solution2.png" alt="G&H Team Data logo" width=100%>
-
-36 rows --> 30 rows
-
-#### Impact
-
-In the case of the individual with 97 prescriptions, we go from 97 rows to 30 rows.
-In the case of all individuals, we go from 35_107_228 rows to --> 23_122_567 rows --> 22_943_164 (65% of initial num rows).
+1. `medication_parser`: collects, QCs and de-duplicates all issued presctions ("ord" files)
+2. `medication_analyser`: links the output of `medication_parser` to the BNF code / VTM lookup table; creates heuristics based treatment length approximations; generates regenie-ready prescribing-phenotype files (BNF as phenotype, VTM as phenotype)
 
 
-<!--
-## Phenotype data
 
-The pipeline imports G&H phenotype data in `.../library-red/phenotypes_rawdata/`.  These data are from:
-
-**DSA__Discovery_7CCGs**: Primary care data from the North East London ICS \[North East London: ~51,000 individuals with data\]
-
-We anticipate adding secondary care data sources in the future.
-
-## Input files
-
-No input files at present.
-
-## Output files
-
-TBC
--->
